@@ -8,6 +8,6 @@ A repository for exploring home field advantage (hfa) in soccer for matches play
 * __pipeline.R__: Data pipeline to run all of the above scripts for a given league.
 
 
-Currently, analysis is only available for the German Bundesliga but will soon be available for other leagues upon their returns from the COVID-19 break.
+Currently, analysis is only available for the German Bundesliga but will soon be available for other leagues upon their returns from the COVID-19 break. More background on the methodolgy behind this analysis can be found [here](https://lukebenz.com/post/bundesliga_hfa/).
 ![](german_bundesliga/figures/exp_pts.png)
 
