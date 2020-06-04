@@ -2,10 +2,13 @@
 xg_graphics <- function(league_, restart_date) {
   x <- read_csv("https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv")
   post_covid <- filter(x, date >= restart_date, date <= Sys.Date(), league == league_)
+  n_teams <- filter(x, league == league_, season == 2019) %>%
+    pull(team1) %>%
+    n_distinct()
   tibble("xg" = c(post_covid$xg1, post_covid$xg2),
          "goals" = c(post_covid$score1, post_covid$score2)) %>%
     mutate("loc" = rep(c("Home", "Away"), each = nrow(.)/2),
-           "week" = paste0("Matchday: ", get_matchdays(.))
+           "week" = paste0("Post-COVID Matchday: ", get_matchdays(., n_teams))
     ) %>%
     ggplot(aes(x = xg, y = goals)) +
     geom_point(aes(color = loc), size = 3) +
@@ -26,7 +29,7 @@ xg_graphics <- function(league_, restart_date) {
   tibble("xg" = c(post_covid$nsxg1, post_covid$nsxg2),
          "goals" = c(post_covid$score1, post_covid$score2)) %>%
     mutate("loc" = rep(c("Home", "Away"), each = nrow(.)/2),
-           "week" = paste0("Matchday: ", get_matchdays(.))
+           "week" = paste0("Post-COVID Matchday: ", get_matchdays(., n_teams))
     ) %>%
     ggplot(aes(x = xg, y = goals)) +
     geom_point(aes(color = loc), size = 3) +
@@ -46,16 +49,16 @@ xg_graphics <- function(league_, restart_date) {
   
 }
 
-get_matchdays <- function(df) {
-  weeks <- 1:(ceiling(nrow(df)/18))
-  full_weeks <- floor(nrow(df)/18)
-  if(0.5 * nrow(df)%%18 != 0) {
-    extra <- 0.5 * nrow(df)%%18
-    rep_vec <- rep(weeks, c(rep(9, full_weeks), extra))
+get_matchdays <- function(df, n_teams) {
+  weeks <- 1:(ceiling(nrow(df)/n_teams))
+  full_weeks <- floor(nrow(df)/n_teams)
+  if(0.5 * nrow(df) %% n_teams != 0) {
+    extra <- 0.5 * nrow(df) %% n_teams
+    rep_vec <- rep(weeks, c(rep(n_teams/2, full_weeks), extra))
   } else {
-    rep_vec <- rep(weeks, rep(9, full_weeks)) 
+    rep_vec <- rep(weeks, rep(n_teams/2, full_weeks)) 
   }
   
 
-  return(rep(25 + rep_vec, 2))
+  return(rep(rep_vec, 2))
 }

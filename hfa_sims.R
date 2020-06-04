@@ -11,7 +11,7 @@ source("prediction_helpers.R")
 exp_pts_graphic <- function(league_, restart_date, fill_col) {
   x <- read_csv("https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv")
   df_league <- filter(x, league == league_) %>%
-    filter(date <= Sys.Date(), date >= restart_date) %>%
+    filter(date <= Sys.Date(), date >= restart_date, !is.na(score1)) %>%
     mutate("exp_home_points" = 3 * prob1 + probtie,
            "home_points" = 3 * (score1 > score2) + 1 * (score1 == score2),
            "home_wp" =  1 * (score1 > score2) + 0.5 * (score1 == score2),
@@ -21,8 +21,9 @@ exp_pts_graphic <- function(league_, restart_date, fill_col) {
   home_pts <- sum(df_league$home_points)
   
   get_exp_home_points <- function(x) {
-    case_when(runif(nrow(df_league)) <= df_league$prob1 ~ 3,
-              runif(nrow(df_league)) <= df_league$prob1  + df_league$probtie ~ 1,
+    p <- runif(nrow(df_league))
+    case_when(p <= df_league$prob1 ~ 3,
+              p <= df_league$prob1  + df_league$probtie ~ 1,
               T ~ 0) %>%
       sum()
   }
@@ -54,19 +55,23 @@ exp_pts_graphic <- function(league_, restart_date, fill_col) {
 
 ### Sims w/ Custom Model and Varying HFA
 hfa_reduction_sims <- function(league_, restart_date, fill_col) {
+  dif <- read_csv("draw_infation_factors.csv") %>%
+    filter(league == league_) %>%
+    pull(tie_inflation)
+  
   x <- read_csv("https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv")
-  post_covid <- filter(x, date >= restart_date, date <= Sys.Date(), league == league_)
+  post_covid <- filter(x, date >= restart_date, date <= Sys.Date(), league == league_, !is.na(score1))
   model <- read_rds(paste0(gsub("\\s", "_", tolower(league_)), "/model.rds"))
   
-  y <- future_map_dfr(seq(0, 1, 0.05), ~get_predictions(post_covid, .x, model))
+  y <- future_map_dfr(seq(0, 1, 0.05), ~get_predictions(post_covid, .x, model, dif))
   
   get_exp_home_points <- function(df) {
-    case_when(runif(nrow(df)) <= df$win_prob ~ 3,
-              runif(nrow(df)) <= df$win_prob  + df$tie_prob ~ 1,
+    p <- runif(nrow(df))
+    case_when(p <= df$win_prob ~ 3,
+              p <= df$win_prob  + df$tie_prob ~ 1,
               T ~ 0) %>%
       sum()
   }
-  
   
   set.seed(123)
   nsims <- 10000
@@ -86,11 +91,14 @@ hfa_reduction_sims <- function(league_, restart_date, fill_col) {
            "exp_home_wp" =   1 * prob1 + 0.5 * probtie)
   home_pts <- sum(post_covid$home_points)
   
-  pvals <- 
+  ecdf <- 
     group_by(df_sims, hfa_reduction) %>%
-    summarise("p_value" = mean(exp_pts <= home_pts),
+    summarise("ecdf" = mean(exp_pts <= home_pts),
               "min_pts" = min(exp_pts),
-              "mean_pts" = mean(exp_pts))
+              "mean_pts" = mean(exp_pts),
+              "median_pts" = median(exp_pts))
+  
+  write_csv(ecdf, paste0(gsub("\\s", "_", tolower(league_)), "/simulation_ecdf.csv"))
   
   
   ggplot(df_sims, aes(x = exp_pts, y = as.factor(hfa_reduction))) +
