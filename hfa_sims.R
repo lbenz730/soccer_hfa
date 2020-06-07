@@ -102,7 +102,7 @@ hfa_reduction_sims <- function(league_, restart_date, fill_col) {
   
   
   ggplot(df_sims, aes(x = exp_pts, y = as.factor(hfa_reduction))) +
-    geom_density_ridges(scale = 1, fill = fill_col, alpha = 0.5) +
+    geom_density_ridges(scale = 0.9, fill = fill_col, alpha = 0.5, quantile_lines = T, quantiles = 2) +
     geom_vline(xintercept = home_pts, lty = 2, size = 1.2) +
     theme_bw() +
     theme(axis.title = element_text(size = 16, hjust = 0.5),

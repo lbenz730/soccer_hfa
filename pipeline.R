@@ -35,5 +35,3 @@ pipeline_refresh("Austrian T-Mobile Bundesliga", "2020-06-02", "pink")
 
 ### Portuguese Liga
 pipeline_refresh("Portuguese Liga", "2020-06-03", "seagreen")
-
-

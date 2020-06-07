@@ -30,8 +30,3 @@ get_predictions <- function(df, hfa_reduction = 0, model, dif) {
   df$hfa_reduction <- hfa_reduction
   return(df)
 }
-
-unvig_odds <- function(x) {
- y <- ifelse(x > 0, 100/(100 + x), abs(x)/(100 + abs(x)))
- return(y/sum(y))
-}
