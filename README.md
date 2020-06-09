@@ -39,7 +39,7 @@ __Updates: 2020-06-04:__
 <p float="left">
   <img src="/german_bundesliga/figures/exp_pts.png" width="400" />
   <img src="/german_2._bundesliga/figures/exp_pts.png" width="400" /> 
-  <img src="/austrian_t-mobile_bundesliga/figures/exp_pts.png" width="400" />
-  <img src="/danish_sas-ligaen/figures/exp_pts.png" width="400" />
+  <img src="/austrian_bundesliga/figures/exp_pts.png" width="400" />
+  <img src="/danish_superliga/figures/exp_pts.png" width="400" />
   <img src="/portuguese_liga/figures/exp_pts.png" width="400" />
 </p>
