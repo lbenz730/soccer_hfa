@@ -6,7 +6,7 @@ plan(multiprocess)
 source("prediction_helpers.R")
 
 
-model_fit <- function(league_, restart_date) {
+model_fit <- function(league_, alias, restart_date) {
   dif <- read_csv("draw_infation_factors.csv") %>%
     filter(league == league_) %>%
     pull(tie_inflation)
@@ -28,7 +28,7 @@ model_fit <- function(league_, restart_date) {
   ### Fit Model
   #model <- glm(goals ~ ns(spi, 3) + ns(opp_spi, 3) + home, data = df, family = "poisson")
   model <- lm(log(goals) ~ ns(spi, 3) + ns(opp_spi, 3) + home, data = df)
-  write_rds(model, paste0(gsub("\\s", "_", tolower(league_)), "/model.rds"))
+  write_rds(model, paste0(gsub("\\s", "_", tolower(alias)), "/model.rds"))
   
   pre_covid <- get_predictions(pre_covid, 0, model, dif)
   
@@ -84,10 +84,10 @@ model_fit <- function(league_, restart_date) {
   
   p1 + p2 + p3 +
     plot_annotation(title = 'Calibration of Model Estimated Probabilities',
-                    subtitle = league_,
+                    subtitle = alias,
                     theme = theme(plot.title = element_text(size = 24, hjust = 0.5),
                                   plot.subtitle = element_text(size = 20, hjust = 0.5))) 
   
   
-  ggsave(paste0(gsub("\\s", "_", tolower(league_)), "/figures/model_calibration.png"), height = 9/1.2, width = 16/1.2)
+  ggsave(paste0(gsub("\\s", "_", tolower(alias)), "/figures/model_calibration.png"), height = 9/1.2, width = 16/1.2)
 }

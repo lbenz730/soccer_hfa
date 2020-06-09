@@ -3,12 +3,14 @@ library(splines)
 library(glue)
 library(ggridges)
 library(furrr)
+library(ggimage)
 options("future.fork.enable" = T)
 plan(multiprocess)
 source("prediction_helpers.R")
+source("xg_graphics.R")
 
 ### Expected vs Observed Points Graphic
-exp_pts_graphic <- function(league_, restart_date, fill_col) {
+exp_pts_graphic <- function(league_, alias, restart_date, fill_col) {
   x <- read_csv("https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv")
   df_league <- filter(x, league == league_) %>%
     filter(date <= Sys.Date(), date >= restart_date, !is.na(score1)) %>%
@@ -19,7 +21,7 @@ exp_pts_graphic <- function(league_, restart_date, fill_col) {
   
   exp_home_pts <- sum(df_league$exp_home_points)
   home_pts <- sum(df_league$home_points)
-  
+
   get_exp_home_points <- function(x) {
     p <- runif(nrow(df_league))
     case_when(p <= df_league$prob1 ~ 3,
@@ -31,12 +33,14 @@ exp_pts_graphic <- function(league_, restart_date, fill_col) {
   set.seed(123)
   nsims <- 10000
   df <- tibble("exp_pts" = future_map_dbl(1:nsims, get_exp_home_points))
-  
+  dens <- density(df$exp_pts)
   
   ggplot(df, aes(x = exp_pts)) +
     geom_density(fill = fill_col, alpha = 0.2) +
     geom_vline(xintercept = home_pts, lty = 2, size = 1.2) +
-    annotate(geom = "label", x = home_pts, y = 0.075, label = glue("Home Points: {home_pts}\nExpected Home Points: {round(exp_home_pts, 1)}")) +
+    annotate(geom = "label", x = home_pts, y = 1.1 * max(dens$y), label = glue("Home Points: {home_pts}\nExpected Home Points: {round(exp_home_pts, 1)}")) +
+    geom_image(data = tibble("x" = quantile(dens$x, 0.95), "y" = quantile(dens$y, 0.95), "image" = get_logo(league_)),
+                      aes(x = x, y = y, image = image), size = 0.2) +
     theme_bw() +
     theme(axis.title = element_text(size = 16, hjust = 0.5),
           plot.title = element_text(size = 24, hjust = 0.5),
@@ -44,24 +48,24 @@ exp_pts_graphic <- function(league_, restart_date, fill_col) {
     labs(x = "# of Points for Home Teams",
          y = "Density",
          title = "Distribution of Expected Home Team Points",
-         subtitle = glue("{league_}: {restart_date} to Present"),
+         subtitle = glue("{alias}: {restart_date} to Present"),
          caption = "Based on 10,000 sims using FiveThirtyEight SPI Model\n(10% HFA Reduction Already Factored In)") +
     scale_x_continuous(limits = c(-5,5) + c(min(df$exp_pts), max(df$exp_pts)))
   
   
-  ggsave(paste0(gsub("\\s", "_", tolower(league_)), "/figures/exp_pts.png"), height = 9/1.2, width = 16/1.2)
+  ggsave(paste0(gsub("\\s", "_", tolower(alias)), "/figures/exp_pts.png"), height = 9/1.2, width = 16/1.2)
 }
 
 
 ### Sims w/ Custom Model and Varying HFA
-hfa_reduction_sims <- function(league_, restart_date, fill_col) {
+hfa_reduction_sims <- function(league_, alias, restart_date, fill_col) {
   dif <- read_csv("draw_infation_factors.csv") %>%
     filter(league == league_) %>%
     pull(tie_inflation)
   
   x <- read_csv("https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv")
   post_covid <- filter(x, date >= restart_date, date <= Sys.Date(), league == league_, !is.na(score1))
-  model <- read_rds(paste0(gsub("\\s", "_", tolower(league_)), "/model.rds"))
+  model <- read_rds(paste0(gsub("\\s", "_", tolower(alias)), "/model.rds"))
   
   y <- future_map_dfr(seq(0, 1, 0.05), ~get_predictions(post_covid, .x, model, dif))
   
@@ -73,8 +77,6 @@ hfa_reduction_sims <- function(league_, restart_date, fill_col) {
       sum()
   }
   
-  set.seed(123)
-  nsims <- 10000
   sim <- function(x) {
     hfa <- seq(0,1,0.05)
     exp_pts <- map_dbl(hfa, ~ get_exp_home_points(filter(y, hfa_reduction == .x)))
@@ -82,7 +84,13 @@ hfa_reduction_sims <- function(league_, restart_date, fill_col) {
                   "exp_pts" = exp_pts))
   }
   
-  df_sims <- future_map_dfr(1:nsims, sim)
+  set.seed(123)
+  nsims <- 10000
+  
+  df_sims <- future_map_dfr(1:nsims, sim) %>%
+    mutate("league" = league_)
+  
+  write_csv(df_sims, paste0(gsub("\\s", "_", tolower(alias)), "/sims/sims.csv"))
   
   post_covid <- post_covid %>%
     mutate("exp_home_points" = 3 * prob1 + probtie,
@@ -98,13 +106,15 @@ hfa_reduction_sims <- function(league_, restart_date, fill_col) {
               "mean_pts" = mean(exp_pts),
               "median_pts" = median(exp_pts))
   
-  write_csv(ecdf, paste0(gsub("\\s", "_", tolower(league_)), "/simulation_ecdf.csv"))
+  write_csv(ecdf, paste0(gsub("\\s", "_", tolower(alias)), "/sims/simulation_ecdf.csv"))
   
   
   ggplot(df_sims, aes(x = exp_pts, y = as.factor(hfa_reduction))) +
     geom_density_ridges(scale = 0.9, fill = fill_col, alpha = 0.5, quantile_lines = T, quantiles = 2) +
     geom_vline(xintercept = home_pts, lty = 2, size = 1.2) +
     theme_bw() +
+    geom_image(data = tibble("x" = 1.05 * max(df_sims$exp_pts), "y" = "0.95", "image" = get_logo(league_)),
+               aes(x = x, y = y, image = image), size = 0.1) +
     theme(axis.title = element_text(size = 16, hjust = 0.5),
           plot.title = element_text(size = 24, hjust = 0.5),
           plot.subtitle = element_text(size = 18, hjust = 0.5),
@@ -112,9 +122,9 @@ hfa_reduction_sims <- function(league_, restart_date, fill_col) {
     labs(x = "Points Accrued by Home Team",
          y = "Reduction in Home Field Advantage", 
          title = "Distribution of Expected Home Team Points w/ Varying HFA",
-         subtitle = glue("{league_}: {restart_date} to Present")) +
+         subtitle = glue("{alias}: {restart_date} to Present")) +
     scale_y_discrete(labels = function(x) paste0(100 * as.numeric(x), "%"))
-  ggsave(paste0(gsub("\\s", "_", tolower(league_)), "/figures/sims.png"), height = 9/1.2, width = 16/1.2)
+  ggsave(paste0(gsub("\\s", "_", tolower(alias)), "/figures/sims.png"), height = 9/1.2, width = 16/1.2)
 }
 
 

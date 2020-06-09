@@ -1,5 +1,5 @@
 ### xg graphics
-xg_graphics <- function(league_, restart_date) {
+xg_graphics <- function(league_, alias, restart_date) {
   x <- read_csv("https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv")
   post_covid <- filter(x, date >= restart_date, date <= Sys.Date(), league == league_)
   n_teams <- filter(x, league == league_, season == 2019) %>%
@@ -23,8 +23,8 @@ xg_graphics <- function(league_, restart_date) {
          y = "Goals Scored",
          color = "",
          title = "xG vs. Goals Scored",
-         subtitle = glue("{league_}: {restart_date} to Present"))
-  ggsave(paste0(gsub("\\s", "_", tolower(league_)), "/figures/shot_based_xg.png"), height = 9/1.2, width = 16/1.2)
+         subtitle = glue("{alias}: {restart_date} to Present"))
+  ggsave(paste0(gsub("\\s", "_", tolower(alias)), "/figures/shot_based_xg.png"), height = 9/1.2, width = 16/1.2)
   
   tibble("xg" = c(post_covid$nsxg1, post_covid$nsxg2),
          "goals" = c(post_covid$score1, post_covid$score2)) %>%
@@ -44,8 +44,8 @@ xg_graphics <- function(league_, restart_date) {
          y = "Goals Scored",
          color = "",
          title = "xG vs. Goals Scored",
-         subtitle = glue("{league_}: {restart_date} to Present"))
-  ggsave(paste0(gsub("\\s", "_", tolower(league_)), "/figures/non_shot_based_xg.png"), height = 9/1.2, width = 16/1.2)
+         subtitle = glue("{alias}: {restart_date} to Present"))
+  ggsave(paste0(gsub("\\s", "_", tolower(alias)), "/figures/non_shot_based_xg.png"), height = 9/1.2, width = 16/1.2)
   
 }
 
@@ -59,6 +59,12 @@ get_matchdays <- function(df, n_teams) {
     rep_vec <- rep(weeks, rep(n_teams/2, full_weeks)) 
   }
   
-
+  
   return(rep(rep_vec, 2))
+}
+
+get_logo <- function(league_) {
+  read_csv("league_info.csv") %>%
+    filter(league == league_) %>%
+    pull(logo_url)
 }

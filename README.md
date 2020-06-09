@@ -15,11 +15,17 @@ Each league has a folder which contains the following objects:
 
 * __figures/:__ Graphics from simulations and xG analysis
 * __model.rds:__ League specific model used in sims
-* __simulation_ecdf.csv:__ csv w/ empirical P(simulated home points <= obsevered home points | hfa reduction)
+* __simulations/:__
+    * __sims.csv:__ csv with simulation results for expected points by hfa reduction between 0 - 100%
+    * __simulation_ecdf.csv:__ csv w/ empirical P(simulated home points <= obsevered home points | hfa reduction)
 
 ---
  
 More background on the methodolgy behind this analysis can be found [here](https://lukebenz.com/post/bundesliga_hfa/).
+
+__Updates: 2020-06-09:__
+
+* Refactor to take config file and add logos to graphics.
 
 __Updates: 2020-06-04:__
 
