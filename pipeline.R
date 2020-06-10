@@ -30,10 +30,10 @@ for(i in 1:nrow(league_info)) {
     slice(1) %>%
     pull(date)
   if((is.na(league_info$last_refresh[i]) & last_match >= league_info$restart_date[i]) | (!is.na(league_info$last_refresh[i]) & last_match > league_info$last_refresh[i])) {
+    print(glue("Refreshing: {league_info$league[i]}"))
     pipeline_refresh(league_info$league[i], league_info$alias[i], 
                      league_info$restart_date[i], league_info$color[i])
     league_info$last_refresh[i] <- Sys.Date()
   }
 }
 write_csv(league_info, "league_info.csv")
-
