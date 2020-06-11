@@ -5,6 +5,7 @@ source("hfa_sims.R")
 source("xg_graphics.R")
 source("model_fit.R")
 source("prediction_helpers.R")
+source("update_readme.R")
 
 pipeline_refresh <- function(league, alias, restart_date, fill_col, model_refresh = F) {
   if(!dir.exists(gsub("\\s", "_", tolower(alias)))) {
@@ -22,6 +23,14 @@ pipeline_refresh <- function(league, alias, restart_date, fill_col, model_refres
 
 league_info <- read_csv("league_info.csv")
 x <- read_csv("https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv")
+league_info <- 
+  league_info %>%
+  select(-n_games) %>%
+  left_join(filter(x, date >= "2020-05-16", !is.na(score1)) %>%
+               group_by(league) %>%
+               summarise("n_games" = n()),
+             by = "league")
+
 for(i in 1:nrow(league_info)) {
   last_match <- 
     filter(x, league == league_info$league[i]) %>%
@@ -37,3 +46,4 @@ for(i in 1:nrow(league_info)) {
   }
 }
 write_csv(league_info, "league_info.csv")
+update_readme()
