@@ -39,14 +39,16 @@ exp_pts_graphic <- function(league_, alias, restart_date, fill_col) {
   ggplot(df, aes(x = exp_pts)) +
     geom_density(fill = fill_col, alpha = 0.2) +
     geom_vline(xintercept = home_pts, lty = 2, size = 1.2) +
-    annotate(geom = "label", x = home_pts, y = max(dens$y) * 1.1, 
+    annotate(geom = "label", x = home_pts, y = max(dens$y) * 1.1, size = 6,
              label = glue("Home Points: {home_pts}\nExpected Home Points: {round(exp_home_pts, 1)}\n(# of Games: {n_games})")) +
     geom_image(data = tibble("x" = quantile(dens$x, 0.95), "y" = quantile(dens$y, 0.95), "image" = get_logo(league_)),
                       aes(x = x, y = y, image = image), size = 0.2) +
     theme_bw() +
-    theme(axis.title = element_text(size = 16, hjust = 0.5),
-          plot.title = element_text(size = 24, hjust = 0.5),
-          plot.subtitle = element_text(size = 20, hjust = 0.5)) + 
+    theme(axis.title = element_text(size = 20, hjust = 0.5),
+          plot.title = element_text(size = 28, hjust = 0.5),
+          plot.subtitle = element_text(size = 22, hjust = 0.5),
+          plot.caption = element_text(size = 14),
+          axis.text = element_text(size = 14)) +
     labs(x = "# of Points for Home Teams",
          y = "Density",
          title = "Distribution of Expected Home Team Points",
@@ -118,13 +120,14 @@ hfa_reduction_sims <- function(league_, alias, restart_date, fill_col) {
     geom_density_ridges(scale = 0.9, fill = fill_col, alpha = 0.5, quantile_lines = T, quantiles = 2) +
     geom_vline(xintercept = home_pts, lty = 2, size = 1.2) +
     theme_bw() +
-    annotate("label", x = 0.9 * max(df_sims$exp_pts), y = "0.8",  
+    annotate("label", x = 0.9 * max(df_sims$exp_pts), y = "0.8", size = 6,
                label = glue("Home Points: {home_pts}\nExpected Home Points w/ Full HFA: {round(ecdf$mean_pts[1], 1)}\nExpected Home Points w/ No HFA: {round(ecdf$mean_pts[21], 1)}\n(# of Games: {n_games})")) +
     geom_image(data = tibble("x" = 0.95 * max(df_sims$exp_pts), "y" = "0.95", "image" = get_logo(league_)),
                aes(x = x, y = y, image = image), size = 0.1) +
-    theme(axis.title = element_text(size = 16, hjust = 0.5),
-          plot.title = element_text(size = 24, hjust = 0.5),
-          plot.subtitle = element_text(size = 18, hjust = 0.5),
+    theme(axis.title = element_text(size = 20, hjust = 0.5),
+          axis.text = element_text(size = 14),
+          plot.title = element_text(size = 28, hjust = 0.5),
+          plot.subtitle = element_text(size = 22, hjust = 0.5),
           legend.position = "bottom") +
     labs(x = "Points Accrued by Home Team",
          y = "Reduction in Home Field Advantage", 
