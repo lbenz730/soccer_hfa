@@ -9,7 +9,7 @@ update_readme <- function() {
   files <- dir(recursive = T)
   files <- files[grepl("/figures/sims.png", files)]
   files <- files[order(league_info$n_games, decreasing = T)]
-  files <- paste0("  <img src=\"", files, "\" width=\"400\" />")
+  files <- paste0("  <img src=\"", files, "\" width=\"450\" />")
   ix_start <- which(read_me == "<p float=\"left\">")
   
   write_lines(c(read_me[1:ix_start], files, read_me[length(read_me)]), "README.md")

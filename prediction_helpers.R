@@ -2,7 +2,7 @@ predict_lambda <- function(df_row, model) {
   df <- tibble(
     "spi" = c(df_row$spi1, df_row$spi2),
     "opp_spi" = c(df_row$spi2, df_row$spi1),
-    "home" = 1:0)
+    "home" = c(1,-1))
   lambdas <- exp(predict(model, newdata = df))
   lambdas <- tibble("lambda1" = lambdas[1], "lambda2" = lambdas[2])
   return(lambdas)

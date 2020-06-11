@@ -21,7 +21,7 @@ model_fit <- function(league_, alias, restart_date) {
     "opp_spi" = c(pre_covid$spi2, pre_covid$spi1),
     "importance" = c(pre_covid$importance1, pre_covid$importance2),
     "opp_importance" = c(pre_covid$importance2, pre_covid$importance1),
-    "home" = rep(1:0, each = n)
+    "home" = rep(c(1, -1), each = n)
   ) 
   
   
