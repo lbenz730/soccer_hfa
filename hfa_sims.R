@@ -92,7 +92,7 @@ hfa_reduction_sims <- function(league_, alias, restart_date, fill_col) {
   }
   
   set.seed(123)
-  nsims <- 1000
+  nsims <- 10000
   
   df_sims <- future_map_dfr(1:nsims, sim) %>%
     mutate("league" = league_)

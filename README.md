@@ -23,6 +23,10 @@ Each league has a folder which contains the following objects:
  
 More background on the methodolgy behind this analysis can be found [here](https://lukebenz.com/post/bundesliga_hfa/).
 
+__Updates: 2020-06-11:__
+
+* Add 95% CI to graphics
+
 __Updates: 2020-06-09:__
 
 * Refactor to take config file and add logos to graphics.
