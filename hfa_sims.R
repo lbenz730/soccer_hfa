@@ -22,7 +22,7 @@ exp_pts_graphic <- function(league_, alias, restart_date, fill_col) {
   exp_home_pts <- sum(df_league$exp_home_points)
   home_pts <- sum(df_league$home_points)
   n_games <- nrow(df_league)
-
+  
   get_exp_home_points <- function(x) {
     p <- runif(nrow(df_league))
     case_when(p <= df_league$prob1 ~ 3,
@@ -42,7 +42,7 @@ exp_pts_graphic <- function(league_, alias, restart_date, fill_col) {
     annotate(geom = "label", x = home_pts, y = max(dens$y) * 1.1,
              label = glue("Home Points: {home_pts}\nExpected Home Points: {round(exp_home_pts, 1)}\n(# of Games: {n_games})")) +
     geom_image(data = tibble("x" = quantile(dens$x, 0.95), "y" = quantile(dens$y, 0.95), "image" = get_logo(league_)),
-                      aes(x = x, y = y, image = image), size = 0.2) +
+               aes(x = x, y = y, image = image), size = 0.2) +
     theme_bw() +
     theme(axis.title = element_text(size = 20, hjust = 0.5),
           plot.title = element_text(size = 28, hjust = 0.5),
@@ -92,7 +92,7 @@ hfa_reduction_sims <- function(league_, alias, restart_date, fill_col) {
   }
   
   set.seed(123)
-  nsims <- 10000
+  nsims <- 1000
   
   df_sims <- future_map_dfr(1:nsims, sim) %>%
     mutate("league" = league_)
@@ -110,6 +110,8 @@ hfa_reduction_sims <- function(league_, alias, restart_date, fill_col) {
     group_by(df_sims, hfa_reduction) %>%
     summarise("ecdf" = mean(exp_pts <= home_pts),
               "min_pts" = min(exp_pts),
+              "q025" = quantile(exp_pts, 0.025),
+              "q975" = quantile(exp_pts, 0.975),
               "mean_pts" = mean(exp_pts),
               "median_pts" = median(exp_pts))
   
@@ -120,8 +122,15 @@ hfa_reduction_sims <- function(league_, alias, restart_date, fill_col) {
     geom_density_ridges(scale = 0.9, fill = fill_col, alpha = 0.5, quantile_lines = T, quantiles = 2) +
     geom_vline(xintercept = home_pts, lty = 2, size = 1.2) +
     theme_bw() +
-    annotate("label", x = 0.9 * max(df_sims$exp_pts), y = "0.8",
-               label = glue("Home Points: {home_pts}\nExpected Home Points w/ Full HFA: {round(ecdf$mean_pts[1], 1)}\nExpected Home Points w/ No HFA: {round(ecdf$mean_pts[21], 1)}\n(# of Games: {n_games})")) +
+    annotate("label", x = 0.9 * max(df_sims$exp_pts), y = "0.7",
+             label = paste(glue("Home Points: {home_pts}\nExpected Home Points w/ Full HFA: {round(ecdf$mean_pts[1], 1)}"),
+                           glue("95% CI: ({round(ecdf$q025[1], 1)},{round(ecdf$q975[1], 1)})"),
+                           glue("Expected Home Points w/ No HFA: {round(ecdf$mean_pts[21], 1)}"),
+                           glue("95% CI: ({round(ecdf$q025[21], 1)},{round(ecdf$q975[21], 1)})"), 
+                           glue("# of Games: {n_games}"),
+                           sep = "\n")
+             
+    ) +
     geom_image(data = tibble("x" = 0.95 * max(df_sims$exp_pts), "y" = "0.95", "image" = get_logo(league_)),
                aes(x = x, y = y, image = image), size = 0.1) +
     theme(axis.title = element_text(size = 20, hjust = 0.5),
