@@ -27,9 +27,9 @@ league_info <-
   league_info %>%
   select(-n_games) %>%
   left_join(filter(x, date >= "2020-05-16", !is.na(score1)) %>%
-              group_by(league) %>%
-              summarise("n_games" = n()),
-            by = "league")
+               group_by(league) %>%
+               summarise("n_games" = n()),
+             by = "league")
 
 for(i in 1:nrow(league_info)) {
   last_match <- 
@@ -38,13 +38,11 @@ for(i in 1:nrow(league_info)) {
     arrange(desc(date)) %>%
     slice(1) %>%
     pull(date)
-  if(!is.na(league_info$last_refresh[i])) {
-    if(T | (is.na(league_info$last_refresh[i]) & last_match >= league_info$restart_date[i]) | (!is.na(league_info$last_refresh[i]) & last_match > league_info$last_refresh[i])) {
-      print(glue("Refreshing: {league_info$league[i]}"))
-      pipeline_refresh(league_info$league[i], league_info$alias[i], 
-                       league_info$restart_date[i], league_info$color[i])
-      league_info$last_refresh[i] <- Sys.Date()
-    }
+  if((is.na(league_info$last_refresh[i]) & last_match >= league_info$restart_date[i]) | (!is.na(league_info$last_refresh[i]) & last_match >= league_info$last_refresh[i])) {
+    print(glue("Refreshing: {league_info$league[i]}"))
+    pipeline_refresh(league_info$league[i], league_info$alias[i], 
+                     league_info$restart_date[i], league_info$color[i])
+    league_info$last_refresh[i] <- Sys.Date()
   }
 }
 write_csv(league_info, "league_info.csv")

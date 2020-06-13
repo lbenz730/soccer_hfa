@@ -124,9 +124,9 @@ hfa_reduction_sims <- function(league_, alias, restart_date, fill_col) {
     theme_bw() +
     annotate("label", x = 0.9 * max(df_sims$exp_pts), y = "0.7",
              label = paste(glue("Home Points: {home_pts}\nExpected Home Points w/ Full HFA: {round(ecdf$mean_pts[1], 1)}"),
-                           glue("95% CI: ({round(ecdf$q025[1], 1)},{round(ecdf$q975[1], 1)})"),
+                           glue("95% CI: ({round(ecdf$q025[1], 1)}, {round(ecdf$q975[1], 1)})"),
                            glue("Expected Home Points w/ No HFA: {round(ecdf$mean_pts[21], 1)}"),
-                           glue("95% CI: ({round(ecdf$q025[21], 1)},{round(ecdf$q975[21], 1)})"), 
+                           glue("95% CI: ({round(ecdf$q025[21], 1)}, {round(ecdf$q975[21], 1)})"), 
                            glue("# of Games: {n_games}"),
                            sep = "\n")
              
