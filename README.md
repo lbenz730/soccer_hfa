@@ -38,7 +38,7 @@ __Updates: 2020-06-04:__
 
 ---
 
-### Results (Updated 2020-06-14)
+### Results (Updated 2020-06-15)
 
 <p float="left">
   <img src="german_bundesliga/figures/sims.png" width="450" />

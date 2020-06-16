@@ -38,7 +38,9 @@ for(i in 1:nrow(league_info)) {
     arrange(desc(date)) %>%
     slice(1) %>%
     pull(date)
-  if((is.na(league_info$last_refresh[i]) & last_match >= league_info$restart_date[i]) | (!is.na(league_info$last_refresh[i]) & last_match >= league_info$last_refresh[i])) {
+  if((is.na(league_info$last_refresh[i]) & last_match >= league_info$restart_date[i]) | 
+     (!is.na(league_info$last_refresh[i]) & last_match > league_info$last_refresh[i]) |
+     last_match == Sys.Date()) {
     print(glue("Refreshing: {league_info$league[i]}"))
     pipeline_refresh(league_info$league[i], league_info$alias[i], 
                      league_info$restart_date[i], league_info$color[i])
@@ -47,3 +49,9 @@ for(i in 1:nrow(league_info)) {
 }
 write_csv(league_info, "league_info.csv")
 update_readme()
+files <- dir(recursive = T)
+map(files[grepl("figures/sims.png", files)], ~file.copy(.x, paste0("simulation_figures/", gsub("/figures/sims.png", "", .x), "_sims.png")))
+
+
+
+       
