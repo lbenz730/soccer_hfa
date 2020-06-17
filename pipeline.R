@@ -50,7 +50,7 @@ for(i in 1:nrow(league_info)) {
 write_csv(league_info, "league_info.csv")
 update_readme()
 files <- dir(recursive = T)
-map(files[grepl("figures/sims.png", files)], ~file.copy(.x, paste0("simulation_figures/", gsub("/figures/sims.png", "", .x), "_sims.png")))
+map(files[grepl("figures/sims.png", files)], ~file.copy(.x, paste0("simulation_figures/", gsub("/figures/sims.png", "", .x), "_sims.png"), overwrite = T))
 
 
 

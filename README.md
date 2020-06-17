@@ -38,7 +38,7 @@ __Updates: 2020-06-04:__
 
 ---
 
-### Results (Updated 2020-06-15)
+### Results (Updated 2020-06-16)
 
 <p float="left">
   <img src="german_bundesliga/figures/sims.png" width="450" />
@@ -51,4 +51,5 @@ __Updates: 2020-06-04:__
   <img src="greek_super_league/figures/sims.png" width="450" />
   <img src="turkish_super_lig/figures/sims.png" width="450" />
   <img src="swedish_allsvenskan/figures/sims.png" width="450" />
+  <img src="norwegian_eliteserien/figures/sims.png" width="450" />
 </p>
