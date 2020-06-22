@@ -2,7 +2,7 @@ library(tidyverse)
 files <- dir(recursive = T)
 model_files <- files[str_detect(files, "model.rds")]
 
-league_info <- read_csv("league_info.csv") %>% head(16)
+league_info <- read_csv("league_info.csv")
 
 hfa_df <- function(alias_) {
   df_league <- filter(league_info, alias == alias_)

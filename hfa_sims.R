@@ -138,7 +138,7 @@ hfa_reduction_sims <- function(league_, alias, restart_date, fill_col) {
           plot.title = element_text(size = 28, hjust = 0.5),
           plot.subtitle = element_text(size = 22, hjust = 0.5),
           legend.position = "bottom") +
-    labs(x = "Points Accrued by Home Team",
+    labs(x = "Points Accrued by Home Teams",
          y = "Reduction in Home Field Advantage", 
          title = "Distribution of Expected Home Team Points w/ Varying HFA",
          subtitle = glue("{alias}: {restart_date} to Present")) +
