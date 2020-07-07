@@ -25,7 +25,7 @@ league_info <- read_csv("league_info.csv")
 x <- read_csv("https://projects.fivethirtyeight.com/soccer-api/club/spi_matches.csv")
 league_info <- 
   league_info %>%
-  select(-n_games) %>%
+  select(-n_games) %>% 
   left_join(filter(x, date >= "2020-05-16", !is.na(score1)) %>%
                group_by(league) %>%
                summarise("n_games" = n()),
