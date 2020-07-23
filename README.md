@@ -38,22 +38,22 @@ __Updates: 2020-06-04:__
 
 ---
 
-### Results (Updated 2020-07-17)
+### Results (Updated 2020-07-22)
 
 <p float="left">
   <img src="spanish_la_liga_2/figures/sims.png" width="450" />
   <img src="spanish_la_liga/figures/sims.png" width="450" />
   <img src="english_league_championship/figures/sims.png" width="450" />
-  <img src="german_bundesliga/figures/sims.png" width="450" />
-  <img src="german_2._bundesliga/figures/sims.png" width="450" />
   <img src="italy_serie_a/figures/sims.png" width="450" />
   <img src="english_premier_league/figures/sims.png" width="450" />
+  <img src="german_bundesliga/figures/sims.png" width="450" />
+  <img src="german_2._bundesliga/figures/sims.png" width="450" />
   <img src="portuguese_liga/figures/sims.png" width="450" />
-  <img src="italy_serie_b/figures/sims.png" width="450" />
-  <img src="norwegian_eliteserien/figures/sims.png" width="450" />
   <img src="swedish_allsvenskan/figures/sims.png" width="450" />
-  <img src="austrian_bundesliga/figures/sims.png" width="450" />
+  <img src="norwegian_eliteserien/figures/sims.png" width="450" />
+  <img src="italy_serie_b/figures/sims.png" width="450" />
   <img src="danish_superliga/figures/sims.png" width="450" />
+  <img src="austrian_bundesliga/figures/sims.png" width="450" />
   <img src="turkish_super_lig/figures/sims.png" width="450" />
   <img src="russian_premier_liga/figures/sims.png" width="450" />
   <img src="greek_super_league/figures/sims.png" width="450" />
