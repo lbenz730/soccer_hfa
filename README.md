@@ -38,14 +38,14 @@ __Updates: 2020-06-04:__
 
 ---
 
-### Results (Updated 2020-08-10)
+### Results (Updated 2020-08-14)
 
 <p float="left">
   <img src="italy_serie_a/figures/sims.png" width="450" />
   <img src="spanish_la_liga_2/figures/sims.png" width="450" />
+  <img src="swedish_allsvenskan/figures/sims.png" width="450" />
   <img src="english_league_championship/figures/sims.png" width="450" />
   <img src="spanish_la_liga/figures/sims.png" width="450" />
-  <img src="swedish_allsvenskan/figures/sims.png" width="450" />
   <img src="italy_serie_b/figures/sims.png" width="450" />
   <img src="norwegian_eliteserien/figures/sims.png" width="450" />
   <img src="english_premier_league/figures/sims.png" width="450" />
